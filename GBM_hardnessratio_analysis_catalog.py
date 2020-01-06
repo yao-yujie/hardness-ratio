@@ -484,9 +484,7 @@ class GRB:
 		plottime=histbin
 		plotrate=histvalue/(histbin[1:]-histbin[:-1])
 		plotrate=np.concatenate(([plotrate[0]],plotrate)) 
-		ax1.plot(plottime,plotrate,linestyle='steps',color='b')
-		ax1.set_xlabel('time')
-		ax1.set_ylabel('Count')
+
 		l=len(edges)		
 		for i in range(1,l-1):
 			time_slice.append(edges[i])
@@ -522,9 +520,7 @@ class GRB:
 		ax1.set_xlabel('time')
 		ax1.set_ylabel('Count')
 		l=len(edges)		
-		for i in range(1,l-1):
-			time_slice.append(edges[i])
-		print(time_slice)
+
 		
 		x=[]
 		dx=[]
@@ -533,8 +529,8 @@ class GRB:
 			z=(edges[i+2]-edges[i+1])/2
 			x.append(s)
 			dx.append(z)
-		print('x',x)
-		print(dx)
+		
+		
 		
 		dy=[epeak_error_p,epeak_error_n]
 		
@@ -552,13 +548,10 @@ class GRB:
 		print(file)
 		fitfile=file[0]	
 		hdu=fits.open(fitfile)
-		trigtime=hdu['Primary'].header['TRIGTIME']
-		data=hdu['EVENTS'].data
-		time=data.field(0)-trigtime
-		ch=data.field(1)
-		goodindex=(ch>=ch1) & (ch<=ch2)  
-		time=time[goodindex]		
-		tte=time[(time>-10)&(time<30)]
+		data=hdu['events'].data['time']
+		trigtime=hdu[0].header['trigtime']
+		time=data-trigtime
+		tte=time[(time>-10)&(time<50)]
 		fig = plt.figure()
 		ax1 = fig.add_subplot(111)
 		ax2 = ax1.twinx()
@@ -579,7 +572,8 @@ class GRB:
 		x=[]
 		dx=[]
 		l=len(edges)	
-		for i  in range(l-2):    
+		print('edges',edges)
+		for i  in range(l-3):    
 			s=(edges[i+1]+edges[i+2])/2
 			z=(edges[i+2]-edges[i+1])/2
 			x.append(s)
@@ -598,12 +592,13 @@ class GRB:
 		start=edges[:-1]
 		stop=edges[1:]
 		ever_rate=[]
-		print(x)
+		print('x',x)
+		print(dx)
 		for index,item in enumerate(start):
 			t=np.where((self.tbins>=item)&(self.tbins<=stop[index]))[0]
 			eva=hardness[t].mean()
 			ever_rate.append(eva)		
-		print(ever_rate)
+		print('rate',ever_rate)
 
 		ax2.scatter(x,ever_rate)
 		ax2.errorbar(x,ever_rate,xerr=dx,zorder=1, fmt='o',color = '0.15',markersize=1e-50)
@@ -612,7 +607,7 @@ class GRB:
 		plt.savefig('hardness_ratio.png')
 
 for n in range(1,nl):
-	os.chdir('/home/yao/Study/hardness_radio')    
+	os.chdir('/home/yao/Study/hardness-ratio')    
 	bnname=name[n]
 	print(bnname)
 	number=trigger_name.tolist().index(bnname)
@@ -632,13 +627,13 @@ for n in range(1,nl):
 	grb.rawlc(viewt1=-50,viewt2=300,binwidth=0.07)
 	grb.base(baset1=-50,baset2=200,binwidth=0.07)
 
-	for i in range(z-1):
-		grb.phaI(slicet1=time_slice[i],slicet2=time_slice[i+1])        
-		grb.specanalyze('slice'+str(i))
+	#for i in range(z-1):
+	#	grb.phaI(slicet1=time_slice[i],slicet2=time_slice[i+1])        
+	#	grb.specanalyze('slice'+str(i))
 	
-	print('epeak',epeak)
+	#print('epeak',epeak)
 	grb.hardness_ratio(lcbinwidth=0.05)
-	grb.bbduration(lcbinwidth=0.05,gamma=1e-300)
+	#grb.bbduration(lcbinwidth=0.05,gamma=1e-300)
 	epeak=[]
 	epeak_error_p=[]
 	epeak_error_n=[]
