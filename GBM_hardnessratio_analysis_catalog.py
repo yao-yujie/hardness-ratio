@@ -479,18 +479,19 @@ class GRB:
 		plotrate=histvalue/lcbinwidth
 		plotrate=np.concatenate(([plotrate[0]],plotrate))
 		ax1.plot(plottime,plotrate,linestyle='steps',color='lightgreen')
+
 		edges = bayesian_blocks(plottime,plotrate,fitness='events',p0=1e-1, gamma=1e-300)
 		histvalue, histbin =np.histogram(tte,bins=edges)
 		plottime=histbin
 		plotrate=histvalue/(histbin[1:]-histbin[:-1])
 		plotrate=np.concatenate(([plotrate[0]],plotrate)) 
-
+		ax1.plot(plottime,plotrate,linestyle='steps',color='b')
 		l=len(edges)		
 		for i in range(1,l-1):
 			time_slice.append(edges[i])
 		print(time_slice)
 	
-
+		plt.savefig('bb.png')
 	def bbduration(self,lcbinwidth=0.05,gamma=1e-300):
 		os.chdir(self.resultdir)
 		det=['n3','n4']
@@ -516,7 +517,7 @@ class GRB:
 		plottime=histbin
 		plotrate=histvalue/(histbin[1:]-histbin[:-1])
 		plotrate=np.concatenate(([plotrate[0]],plotrate)) 
-		ax1.plot(plottime,plotrate,linestyle='steps',color='b')
+		#ax1.plot(plottime,plotrate,linestyle='steps',color='b')
 		ax1.set_xlabel('time')
 		ax1.set_ylabel('Count')
 		l=len(edges)		
@@ -602,7 +603,7 @@ class GRB:
 
 		ax2.scatter(x,ever_rate)
 		ax2.errorbar(x,ever_rate,xerr=dx,zorder=1, fmt='o',color = '0.15',markersize=1e-50)
-		ax2.set_ylim(0,2.1)
+		ax2.set_ylim(0.5,2)
 		ax2.set_ylabel('hardness ratio')
 		plt.savefig('hardness_ratio.png')
 
@@ -627,13 +628,13 @@ for n in range(1,nl):
 	grb.rawlc(viewt1=-50,viewt2=300,binwidth=0.07)
 	grb.base(baset1=-50,baset2=200,binwidth=0.07)
 
-	#for i in range(z-1):
-	#	grb.phaI(slicet1=time_slice[i],slicet2=time_slice[i+1])        
-	#	grb.specanalyze('slice'+str(i))
+	for i in range(z-1):
+		grb.phaI(slicet1=time_slice[i],slicet2=time_slice[i+1])        
+		grb.specanalyze('slice'+str(i))
 	
-	#print('epeak',epeak)
+	print('epeak',epeak)
 	grb.hardness_ratio(lcbinwidth=0.05)
-	#grb.bbduration(lcbinwidth=0.05,gamma=1e-300)
+	grb.bbduration(lcbinwidth=0.05,gamma=1e-300)
 	epeak=[]
 	epeak_error_p=[]
 	epeak_error_n=[]
