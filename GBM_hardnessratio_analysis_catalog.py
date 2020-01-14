@@ -50,6 +50,8 @@ epeak_error_p=[]
 epeak_error_n=[]
 
 
+
+
 def get_usersjar():
     usersjar = "/home/yao/Software/users.jar"
     return usersjar
@@ -621,6 +623,13 @@ for n in range(1,nl):
 	mask = [m.start() for m in re.finditer('1', scat_detector_mask_str[number])]
 	l=len(mask)
 	print(mask)
+	det2=[]
+
+	for i in mask[:]:
+		use_mask=det1[i]+'.pha'
+		print(use_mask)
+		det2.append(use_mask)
+
 	grb=GRB(bnname)
 	grb.timeslice(lcbinwidth=0.05,gamma=1e-300)
 	z=len(time_slice)
